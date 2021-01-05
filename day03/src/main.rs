@@ -10,12 +10,10 @@ fn main() {
 
 fn part1(path: &str) -> usize {
     let dat = std::fs::read_to_string(path).unwrap();
-    
     let mut curr_house = (0, 0);
     let mut houses: HashSet<(isize, isize)> = HashSet::new();
 
     houses.insert(curr_house);
-    
     dat.split_terminator("")
         .for_each(|dir| follow_dir(dir, &mut curr_house, &mut houses));
 
@@ -24,11 +22,9 @@ fn part1(path: &str) -> usize {
 
 fn part2(path: &str) -> usize {
     let dat = std::fs::read_to_string(path).unwrap();
-    
     let mut santa_curr_house = (0, 0);
     let mut robosanta_curr_house = (0, 0);
     let mut houses: HashSet<(isize, isize)> = HashSet::new();
-    
     houses.insert(santa_curr_house);
     houses.insert(robosanta_curr_house);
 
@@ -54,4 +50,14 @@ fn follow_dir(dir: &str, pos: &mut (isize, isize), hist: &mut HashSet<(isize, is
         _ => (),
     }
     hist.insert(*pos);
+}
+
+#[test]
+fn test_part1() {
+    assert_eq!(part1("./input"), 2572);
+}
+
+#[test]
+fn test_part2() {
+    assert_eq!(part2("./input"), 2631);
 }

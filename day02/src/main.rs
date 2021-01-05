@@ -42,3 +42,13 @@ fn parse_dims(dimensions: &str) -> (usize, usize, usize) {
 
     (dims[0], dims[1], dims[2])
 }
+
+#[test]
+fn test_part1() {
+    assert_eq!(part1("./input"), 1588178);
+}
+
+#[test]
+fn test_part2() {
+    assert_eq!(part2("./input"), 3783758);
+}
