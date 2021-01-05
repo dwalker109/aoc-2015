@@ -10,6 +10,7 @@ fn main() {
 
 fn part1(path: &str) -> usize {
     let dat = std::fs::read_to_string(path).unwrap();
+
     let mut curr_house = (0, 0);
     let mut houses: HashSet<(isize, isize)> = HashSet::new();
 
@@ -22,9 +23,11 @@ fn part1(path: &str) -> usize {
 
 fn part2(path: &str) -> usize {
     let dat = std::fs::read_to_string(path).unwrap();
+
     let mut santa_curr_house = (0, 0);
     let mut robosanta_curr_house = (0, 0);
     let mut houses: HashSet<(isize, isize)> = HashSet::new();
+
     houses.insert(santa_curr_house);
     houses.insert(robosanta_curr_house);
 
@@ -42,6 +45,7 @@ fn part2(path: &str) -> usize {
 
 fn follow_dir(dir: &str, pos: &mut (isize, isize), hist: &mut HashSet<(isize, isize)>) {
     let (x, y) = *pos;
+
     match dir {
         "<" => *pos = (x - 1, y),
         ">" => *pos = (x + 1, y),
@@ -49,6 +53,7 @@ fn follow_dir(dir: &str, pos: &mut (isize, isize), hist: &mut HashSet<(isize, is
         "v" => *pos = (x, y - 1),
         _ => (),
     }
+
     hist.insert(*pos);
 }
 

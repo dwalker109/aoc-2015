@@ -7,13 +7,12 @@ fn main() {
 }
 
 fn part1(path: &str) -> isize {
-    let mut floor = 0;
     let dat = std::fs::read_to_string(path).unwrap();
 
-    dat.split("").for_each(|elem| match elem {
-        "(" => floor += 1,
-        ")" => floor -= 1,
-        _ => (),
+    let floor = dat.split("").fold(0, |acc, elem| match elem {
+        "(" => return acc + 1,
+        ")" => return acc - 1,
+        _ => acc,
     });
 
     floor
