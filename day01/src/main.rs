@@ -1,3 +1,6 @@
+use itertools::FoldWhile::{Continue, Done};
+use itertools::Itertools;
+
 fn main() {
     let p1 = part1("./input");
     let p2 = part2("./input");
@@ -19,22 +22,27 @@ fn part1(path: &str) -> isize {
 }
 
 fn part2(path: &str) -> usize {
-    let mut floor = 0;
     let dat = std::fs::read_to_string(path).unwrap();
-    let items: Vec<(usize, &str)> = dat.split("").enumerate().collect();
 
-    for (n, elem) in items {
-        match elem {
-            "(" => floor += 1,
-            ")" => floor -= 1,
-            _ => (),
-        }
-        if floor == -1 {
-            return n;
-        }
-    }
+    let pos = dat
+        .split("")
+        .enumerate()
+        .fold_while(0 as isize, |mut acc, (pos, elem)| {
+            match elem {
+                "(" => acc += 1,
+                ")" => acc -= 1,
+                _ => (),
+            }
 
-    0
+            if acc == -1 {
+                return Done(pos as isize);
+            } else {
+                Continue(acc)
+            }
+        })
+        .into_inner();
+
+    pos as usize
 }
 
 #[test]
