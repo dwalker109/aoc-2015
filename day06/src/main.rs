@@ -1,10 +1,15 @@
 use regex::Regex;
-use std::{collections::HashSet, fs};
+use std::{
+    collections::{HashMap, HashSet},
+    fs,
+};
 
 fn main() {
     let p1 = part1("./input");
+    let p2 = part2("./input");
 
     println!("Part 1: {}", p1);
+    println!("Part 2: {}", p2);
 }
 
 enum Op {
@@ -63,6 +68,35 @@ fn part1(path: &str) -> u32 {
     lit.len() as u32
 }
 
+fn part2(path: &str) -> usize {
+    let instructions = get_instructions(path);
+    let mut lit: HashMap<Coordinates, usize> = HashMap::new();
+
+    for instruction in instructions {
+        let expanded = instruction.expand_coordinates();
+        for coordinate in expanded {
+            match instruction.0 {
+                Op::TurnOn => {
+                    let light = lit.entry(coordinate).or_insert(0);
+                    *light += 1;
+                }
+                Op::TurnOff => {
+                    let light = lit.entry(coordinate).or_insert(0);
+                    if *light > 0 {
+                        *light -= 1;
+                    }
+                }
+                Op::Toggle => {
+                    let light = lit.entry(coordinate).or_insert(0);
+                    *light += 2;
+                }
+            }
+        }
+    }
+
+    lit.iter().fold(0, |acc, (_, &nit)| acc + nit)
+}
+
 fn get_instructions(path: &str) -> Vec<Instruction> {
     let data = fs::read_to_string(path).expect("Could not read input");
     let extract_regex = Regex::new(
@@ -96,5 +130,11 @@ fn get_instructions(path: &str) -> Vec<Instruction> {
 #[test]
 fn test_part1() {
     let result = part1("./input_test");
-    assert_eq!(result, 1626);
+    assert_eq!(result, 448325);
+}
+
+#[test]
+fn test_part2() {
+    let result = part2("./input_test");
+    assert_eq!(result, 975269);
 }
