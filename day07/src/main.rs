@@ -17,16 +17,65 @@ fn part1(path: &str) -> u32 {
 }
 
 fn part2(path: &str, b_override: u32) -> u32 {
-    let mut instructions = get_instructions(path);
-
-    let b_index = instructions
-        .iter()
-        .position(|instruction| matches!(instruction, Gate::Pass(_, wire) if wire == "b"))
-        .unwrap();
-
-    instructions[b_index] = Gate::Pass(format!("{}", b_override), String::from("b"));
+    let instructions = get_instructions(path)
+        .into_iter()
+        .map(|instruction| match instruction {
+            Gate::Pass(_, wire) if wire == "b" => {
+                Gate::Pass(format!("{}", b_override), "b".to_string())
+            }
+            _ => instruction,
+        })
+        .collect();
 
     wire_up(instructions)
+}
+
+enum Gate {
+    Pass(String, String),
+    And(String, String, String),
+    Or(String, String, String),
+    LShift(String, u32, String),
+    RShift(String, u32, String),
+    Not(String, String),
+}
+
+fn get_instructions(path: &str) -> Vec<Gate> {
+    let data = fs::read_to_string(path).expect("Could not read input");
+    let opstring_regexp = Regex::new(r"([A-Z]+)").unwrap();
+    let mut instructions: Vec<Gate> = Vec::new();
+
+    for line in data.lines() {
+        let parts: Vec<&str> = line.split_ascii_whitespace().collect();
+        match opstring_regexp.captures(line) {
+            Some(captures) => match &captures[1] {
+                "AND" => instructions.push(Gate::And(
+                    parts[0].to_string(),
+                    parts[2].to_string(),
+                    parts[4].to_string(),
+                )),
+                "OR" => instructions.push(Gate::Or(
+                    parts[0].to_string(),
+                    parts[2].to_string(),
+                    parts[4].to_string(),
+                )),
+                "LSHIFT" => instructions.push(Gate::LShift(
+                    parts[0].to_string(),
+                    parts[2].parse().unwrap(),
+                    parts[4].to_string(),
+                )),
+                "RSHIFT" => instructions.push(Gate::RShift(
+                    parts[0].to_string(),
+                    parts[2].parse().unwrap(),
+                    parts[4].to_string(),
+                )),
+                "NOT" => instructions.push(Gate::Not(parts[1].to_string(), parts[3].to_string())),
+                _ => (),
+            },
+            None => instructions.push(Gate::Pass(parts[0].to_string(), parts[2].to_string())),
+        };
+    }
+
+    instructions
 }
 
 fn wire_up(instructions: Vec<Gate>) -> u32 {
@@ -40,9 +89,9 @@ fn wire_up(instructions: Vec<Gate>) -> u32 {
         },
     };
 
-    let mut completed: Vec<usize> = Vec::new();
-
     while !wire_map.borrow().contains_key(&String::from("a")) {
+        let mut completed: Vec<usize> = Vec::new();
+
         for (i, instruction) in instructions.iter().enumerate() {
             if completed.contains(&i) {
                 continue;
@@ -97,60 +146,6 @@ fn wire_up(instructions: Vec<Gate>) -> u32 {
     }
 
     *wire_map.into_inner().get(&String::from("a")).unwrap()
-}
-
-enum Gate {
-    Pass(String, String),
-    And(String, String, String),
-    Or(String, String, String),
-    LShift(String, u32, String),
-    RShift(String, u32, String),
-    Not(String, String),
-}
-
-fn get_instructions(path: &str) -> Vec<Gate> {
-    let data = fs::read_to_string(path).expect("Could not read input");
-    let opstring_regexp = Regex::new(r"([A-Z]+)").unwrap();
-    let mut instructions: Vec<Gate> = Vec::new();
-
-    for line in data.lines() {
-        let parts: Vec<&str> = line.split_ascii_whitespace().collect();
-        match opstring_regexp.captures(line) {
-            Some(captures) => match &captures[1] {
-                "AND" => instructions.push(Gate::And(
-                    parts[0].parse().unwrap(),
-                    parts[2].parse().unwrap(),
-                    parts[4].parse().unwrap(),
-                )),
-                "OR" => instructions.push(Gate::Or(
-                    parts[0].parse().unwrap(),
-                    parts[2].parse().unwrap(),
-                    parts[4].parse().unwrap(),
-                )),
-                "LSHIFT" => instructions.push(Gate::LShift(
-                    parts[0].parse().unwrap(),
-                    parts[2].parse().unwrap(),
-                    parts[4].parse().unwrap(),
-                )),
-                "RSHIFT" => instructions.push(Gate::RShift(
-                    parts[0].parse().unwrap(),
-                    parts[2].parse().unwrap(),
-                    parts[4].parse().unwrap(),
-                )),
-                "NOT" => instructions.push(Gate::Not(
-                    parts[1].parse().unwrap(),
-                    parts[3].parse().unwrap(),
-                )),
-                _ => (),
-            },
-            None => instructions.push(Gate::Pass(
-                parts[0].parse().unwrap(),
-                parts[2].parse().unwrap(),
-            )),
-        };
-    }
-
-    instructions
 }
 
 #[test]
