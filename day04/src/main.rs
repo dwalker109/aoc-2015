@@ -34,12 +34,17 @@ fn mine(sk: &str, lead_in: &str) -> isize {
     panic!("gahhhh");
 }
 
-#[test]
-fn test_part1() {
-    assert_eq!(part1("pqrstuv"), 1048970);
-}
+#[cfg(test)]
+mod test {
+    use super::*;
 
-#[test]
-fn test_part2() {
-    assert_eq!(part2("pqrstuv"), 5714438);
+    #[test]
+    fn test_part1() {
+        assert_eq!(part1("pqrstuv"), 1048970);
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(part2("pqrstuv"), 5714438);
+    }
 }

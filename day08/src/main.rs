@@ -41,7 +41,7 @@ fn part2(path: &str) -> usize {
         .iter()
         .map(|line| {
             let inmem = line.replace(r"\", r"$$").replace(r#"""#, r"$$");
-            
+
             format!("${}$", inmem).len()
         })
         .sum();
@@ -56,15 +56,16 @@ fn get_input(path: &str) -> Vec<String> {
     input
 }
 
+#[cfg(test)]
 mod test {
-    use super::*;    
+    use super::*;
 
     #[test]
     fn test_part1() {
         let result = part1("./input");
         assert_eq!(result, 1333);
     }
-    
+
     #[test]
     fn test_part2() {
         let result = part2("./input");

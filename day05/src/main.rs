@@ -117,12 +117,17 @@ fn is_char_separated_pair(line: &String) -> bool {
     result > 0
 }
 
-#[test]
-fn test_part1() {
-    assert_eq!(part1("./input"), 236);
-}
+#[cfg(test)]
+mod test {
+    use super::*;
 
-#[test]
-fn test_part2() {
-    assert_eq!(part2("./input"), 51);
+    #[test]
+    fn test_part1() {
+        assert_eq!(part1("./input"), 236);
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(part2("./input"), 51);
+    }
 }

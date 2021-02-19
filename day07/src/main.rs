@@ -148,14 +148,19 @@ fn wire_up(instructions: Vec<Gate>) -> u32 {
     *wire_map.into_inner().get(&String::from("a")).unwrap()
 }
 
-#[test]
-fn test_part1() {
-    let p1 = part1("./input");
-    assert_eq!(p1, 46065)
-}
+#[cfg(test)]
+mod test {
+    use super::*;
 
-#[test]
-fn test_part2() {
-    let p2 = part2("./input", 46065);
-    assert_eq!(p2, 14134)
+    #[test]
+    fn test_part1() {
+        let p1 = part1("./input");
+        assert_eq!(p1, 46065)
+    }
+
+    #[test]
+    fn test_part2() {
+        let p2 = part2("./input", 46065);
+        assert_eq!(p2, 14134)
+    }
 }

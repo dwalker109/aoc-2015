@@ -45,12 +45,17 @@ fn part2(path: &str) -> usize {
     pos as usize
 }
 
-#[test]
-fn test_part1() {
-    assert_eq!(part1("./input"), 138);
-}
+#[cfg(test)]
+mod test {
+    use super::*;
 
-#[test]
-fn test_part2() {
-    assert_eq!(part2("./input"), 1771);
+    #[test]
+    fn test_part1() {
+        assert_eq!(part1("./input"), 138);
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(part2("./input"), 1771);
+    }
 }

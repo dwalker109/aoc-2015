@@ -57,12 +57,17 @@ fn follow_dir(dir: &str, pos: &mut (isize, isize), hist: &mut HashSet<(isize, is
     hist.insert(*pos);
 }
 
-#[test]
-fn test_part1() {
-    assert_eq!(part1("./input"), 2572);
-}
+#[cfg(test)]
+mod test {
+    use super::*;
 
-#[test]
-fn test_part2() {
-    assert_eq!(part2("./input"), 2631);
+    #[test]
+    fn test_part1() {
+        assert_eq!(part1("./input"), 2572);
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(part2("./input"), 2631);
+    }
 }

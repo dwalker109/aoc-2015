@@ -127,14 +127,19 @@ fn get_instructions(path: &str) -> Vec<Instruction> {
     instructions
 }
 
-#[test]
-fn test_part1() {
-    let result = part1("./input_test");
-    assert_eq!(result, 448325);
-}
+#[cfg(test)]
+mod test {
+    use super::*;
 
-#[test]
-fn test_part2() {
-    let result = part2("./input_test");
-    assert_eq!(result, 975269);
+    #[test]
+    fn test_part1() {
+        let result = part1("./input_test");
+        assert_eq!(result, 448325);
+    }
+
+    #[test]
+    fn test_part2() {
+        let result = part2("./input_test");
+        assert_eq!(result, 975269);
+    }
 }
