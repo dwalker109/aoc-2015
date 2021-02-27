@@ -1,8 +1,12 @@
-fn main() {
-    let p1 = part1(&mut "1113122113");
-    let p2 = part2(&mut "1113122113");
+use std::cell::RefCell;
 
+const INPUT: &str = "1113122113";
+
+fn main() {
+    let p1 = part1(INPUT);
     println!("Part 1: {}", p1);
+
+    let p2 = part2(INPUT);
     println!("Part 2: {}", p2);
 }
 
@@ -15,7 +19,7 @@ fn part2(input: &str) -> usize {
 }
 
 fn run_x_times(input: &str, qty: u32) -> usize {
-    let mut progress = input.to_string();
+    let mut progress = Vec::from(input.as_bytes());
 
     for _ in 0..qty {
         progress = look_and_say(&progress);
@@ -24,33 +28,38 @@ fn run_x_times(input: &str, qty: u32) -> usize {
     progress.len()
 }
 
-fn look_and_say(source: &str) -> String {
-    let source_bytes = source.as_bytes();
+fn look_and_say(source_bytes: &[u8]) -> Vec<u8> {
+    let tally = RefCell::new(Vec::<Vec<u8>>::with_capacity(10_000_000));
+    let count = RefCell::new(0 as u32);
 
-    let mut tally: Vec<(u32, u8)> = vec![];
-    let mut count = 0;
+    let push_to_tally = |curr: &u8| {
+        tally
+            .borrow_mut()
+            .push(count.borrow().to_string().as_bytes().to_vec());
+        tally.borrow_mut().push(vec![*curr]);
+    };
 
-    for n in 0..source.len() {
+    for n in 0..source_bytes.len() {
         let curr = source_bytes[n];
 
-        count += 1;
+        *count.borrow_mut() += 1;
 
-        if n + 1 == source.len() {
-            tally.push((count, curr));
+        if n + 1 == source_bytes.len() {
+            push_to_tally(&curr);
             break;
         }
 
         let next = source_bytes[n + 1];
 
         if curr != next {
-            tally.push((count, curr));
-            count = 0;
+            push_to_tally(&curr);
+            *count.borrow_mut() = 0;
         }
     }
 
-    tally.iter().fold(String::new(), |acc, &(len, curr)| {
-        [acc, len.to_string(), curr.to_string()].concat()
-    })
+    let joined: Vec<u8> = tally.borrow().to_owned().into_iter().flatten().collect();
+
+    joined
 }
 
 #[cfg(test)]
@@ -59,6 +68,11 @@ mod test {
 
     #[test]
     fn test_part1() {
-        assert_eq!(look_and_say("111221").len(), 6);
+        assert_eq!(part1(INPUT), 360154);
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(part2(INPUT), 5103798);
     }
 }
