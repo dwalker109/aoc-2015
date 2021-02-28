@@ -17,37 +17,39 @@ fn part2(input: &str) -> usize {
 }
 
 fn run_x_times(input: &str, qty: u32) -> usize {
-    let mut progress = Vec::from(input.as_bytes());
+    let mut nums = input
+        .chars()
+        .map(|n| n.to_string().parse::<u8>().unwrap())
+        .collect::<Vec<_>>();
 
     for _ in 0..qty {
-        progress = look_and_say(&progress);
+        nums = look_and_say(&nums);
     }
 
-    progress.len()
+    // Assumes nums will never have more than 9 of the same num in a row
+    nums.len()
 }
 
-fn look_and_say(source_bytes: &[u8]) -> Vec<u8> {
+fn look_and_say(nums: &[u8]) -> Vec<u8> {
     let mut tally: Vec<u8> = Vec::new();
-    let mut count: u32 = 0;
+    let mut count: u8 = 0;
 
-    fn push_to_tally(tally: &mut Vec<u8>, count: &u32, curr: &u8) {
-        for b in count.to_string().as_bytes().iter() {
-            tally.push(*b);
-        }
+    fn push_to_tally(tally: &mut Vec<u8>, count: &u8, curr: &u8) {
+        tally.push(*count);
         tally.push(*curr);
     };
 
-    for n in 0..source_bytes.len() {
-        let curr = source_bytes.get(n).unwrap();
+    for n in 0..nums.len() {
+        let curr = nums.get(n).unwrap();
 
         count += 1;
 
-        if n + 1 == source_bytes.len() {
+        if n + 1 == nums.len() {
             push_to_tally(&mut tally, &count, &curr);
             break;
         }
 
-        let next = source_bytes.get(n + 1).unwrap();
+        let next = nums.get(n + 1).unwrap();
 
         if curr != next {
             push_to_tally(&mut tally, &count, &curr);
