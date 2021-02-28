@@ -1,5 +1,3 @@
-use std::cell::RefCell;
-
 const INPUT: &str = "1113122113";
 
 fn main() {
@@ -29,37 +27,35 @@ fn run_x_times(input: &str, qty: u32) -> usize {
 }
 
 fn look_and_say(source_bytes: &[u8]) -> Vec<u8> {
-    let tally = RefCell::new(Vec::<Vec<u8>>::with_capacity(10_000_000));
-    let count = RefCell::new(0 as u32);
+    let mut tally: Vec<u8> = Vec::new();
+    let mut count: u32 = 0;
 
-    let push_to_tally = |curr: &u8| {
-        tally
-            .borrow_mut()
-            .push(count.borrow().to_string().as_bytes().to_vec());
-        tally.borrow_mut().push(vec![*curr]);
+    fn push_to_tally(tally: &mut Vec<u8>, count: &u32, curr: &u8) {
+        for b in count.to_string().as_bytes().iter() {
+            tally.push(*b);
+        }
+        tally.push(*curr);
     };
 
     for n in 0..source_bytes.len() {
-        let curr = source_bytes[n];
+        let curr = source_bytes.get(n).unwrap();
 
-        *count.borrow_mut() += 1;
+        count += 1;
 
         if n + 1 == source_bytes.len() {
-            push_to_tally(&curr);
+            push_to_tally(&mut tally, &count, &curr);
             break;
         }
 
-        let next = source_bytes[n + 1];
+        let next = source_bytes.get(n + 1).unwrap();
 
         if curr != next {
-            push_to_tally(&curr);
-            *count.borrow_mut() = 0;
+            push_to_tally(&mut tally, &count, &curr);
+            count = 0;
         }
     }
 
-    let joined: Vec<u8> = tally.borrow().to_owned().into_iter().flatten().collect();
-
-    joined
+    tally
 }
 
 #[cfg(test)]
