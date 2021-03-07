@@ -1,5 +1,5 @@
 [package]
-name = "day10"
+name = "day13"
 version = "0.1.0"
 authors = ["Dan Walker <dwalker109@gmail.com>"]
 edition = "2018"
@@ -7,6 +7,4 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-
-[profile.release]
-debug = true
+itertools = "0.10"
