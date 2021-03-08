@@ -18,7 +18,7 @@ fn part1(path: &str) -> i32 {
 
     let (lookup, people) = parse_input(&input);
     let permutations = people.iter().permutations(people.len());
-    let scores = calc_scores(permutations, &lookup);
+    let scores = calc_scores(permutations, lookup);
 
     *scores.last().unwrap()
 }
@@ -26,10 +26,10 @@ fn part1(path: &str) -> i32 {
 fn part2(path: &str) -> i32 {
     let input = read_to_string(path).unwrap();
 
-    let (mut lookup, mut people) = parse_input(&input);
-    let (lookup_with_me, people_with_me) = invite_me(&mut lookup, &mut people, "dan");
-    let permutations = people_with_me.iter().permutations(people_with_me.len());
-    let scores = calc_scores(permutations, lookup_with_me);
+    let (lookup, people) = parse_input(&input);
+    let (lookup, people) = invite_me(lookup, people, "dan");
+    let permutations = people.iter().permutations(people.len());
+    let scores = calc_scores(permutations, lookup);
 
     *scores.last().unwrap()
 }
@@ -65,10 +65,10 @@ fn parse_input(input: &str) -> (HashMap<(&str, &str), i32>, HashSet<&str>) {
 }
 
 fn invite_me<'a>(
-    lookup: &'a mut HashMap<(&'a str, &'a str), i32>,
-    people: &'a mut HashSet<&'a str>,
+    mut lookup: HashMap<(&'a str, &'a str), i32>,
+    mut people: HashSet<&'a str>,
     me: &'a str,
-) -> (&'a HashMap<(&'a str, &'a str), i32>, &'a HashSet<&'a str>) {
+) -> (HashMap<(&'a str, &'a str), i32>, HashSet<&'a str>) {
     for person in people.iter() {
         lookup.insert((person, me), 0);
         lookup.insert((me, person), 0);
@@ -80,7 +80,7 @@ fn invite_me<'a>(
 
 fn calc_scores(
     permutations: itertools::Permutations<Iter<&str>>,
-    lookup: &HashMap<(&str, &str), i32>,
+    lookup: HashMap<(&str, &str), i32>,
 ) -> Vec<i32> {
     let scores = permutations
         .map(|p| {
