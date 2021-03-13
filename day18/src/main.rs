@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fs::read_to_string};
+use std::{cmp::min, collections::HashSet, fs::read_to_string};
 
 fn main() {
     let p1 = game_of_life("./input", 100, false);
@@ -23,27 +23,32 @@ fn game_of_life(path: &str, steps: u32, with_stuck: bool) -> usize {
 
 struct Grid<'a> {
     _raw: &'a str,
-    state: HashMap<(isize, isize), bool>,
-    stuck: Vec<(isize, isize)>,
+    y_max: usize,
+    x_max: usize,
+    state: HashSet<(usize, usize)>,
+    stuck: Vec<(usize, usize)>,
 }
 
 impl<'a> Grid<'a> {
     fn from(raw: &str, with_stuck: bool) -> Grid {
-        let mut initial_state = HashMap::new();
+        let y_max = raw.lines().count() - 1;
+        let x_max = raw.lines().next().unwrap().len() - 1;
+
+        let mut initial_state = HashSet::with_capacity((y_max * x_max) as usize);
 
         for (y, line) in raw.lines().enumerate() {
             for (x, light) in line.chars().enumerate() {
-                initial_state.insert((y as isize, x as isize), light == '#');
+                if light == '#' {
+                    initial_state.insert((y, x));
+                }
             }
         }
 
         let stuck = match with_stuck {
             true => {
-                let y_max = (raw.lines().count() - 1) as isize;
-                let x_max = (raw.lines().next().unwrap().len() - 1) as isize;
                 let stuck = vec![(0, 0), (0, x_max), (y_max, 0), (y_max, x_max)];
                 for s in stuck.iter() {
-                    initial_state.insert(*s, true);
+                    initial_state.insert(*s);
                 }
                 stuck
             }
@@ -54,44 +59,52 @@ impl<'a> Grid<'a> {
 
         Grid {
             _raw: raw,
+            y_max,
+            x_max,
             state: initial_state,
             stuck,
         }
     }
 
     fn gen_next_state(&mut self) {
-        let mut next_state = self.state.clone();
+        let mut next_state = HashSet::with_capacity(self.state.capacity());
 
-        for ((y, x), lit) in self.state.iter() {
-            let lit_neighbours_qty = (y - 1..=y + 1)
-                .flat_map(|ny| (x - 1..=x + 1).map(move |nx| (ny, nx)))
-                .filter(|nyx| nyx != &(*y, *x))
-                .fold(0, |acc, n| {
-                    if let Some(true) = self.state.get(&n) {
-                        acc + 1
-                    } else {
-                        acc
-                    }
-                });
+        for y in 0..=self.y_max {
+            for x in 0..=self.x_max {
+                let lit = self.state.contains(&(y, x));
 
-            let light_next_state = match lit_neighbours_qty {
-                2 | 3 if *lit => true,
-                3 if !*lit => true,
-                _ => false,
-            };
+                let lit_neighbours_qty = (y.saturating_sub(1)..=min(self.y_max, y + 1))
+                    .flat_map(|ny| {
+                        (x.saturating_sub(1)..=min(self.x_max, x + 1)).map(move |nx| (ny, nx))
+                    })
+                    .filter(|nyx| nyx != &(y, x))
+                    .fold(0, |acc, n| {
+                        if self.state.contains(&n) {
+                            acc + 1
+                        } else {
+                            acc
+                        }
+                    });
 
-            next_state.insert((*y, *x), light_next_state);
+                let should_light = match lit_neighbours_qty {
+                    2 | 3 if lit => true,
+                    3 if !lit => true,
+                    _ => false,
+                };
+
+                if should_light {
+                    next_state.insert((y, x));
+                }
+            }
         }
 
-        for s in self.stuck.iter() {
-            next_state.insert(*s, true);
-        }
+        next_state.extend(self.stuck.iter());
 
         self.state = next_state;
     }
 
     fn count_lit_lights(&self) -> usize {
-        self.state.iter().filter(|((_, _), &lit)| lit).count()
+        self.state.len()
     }
 }
 
