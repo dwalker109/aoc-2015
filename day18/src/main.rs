@@ -1,4 +1,6 @@
-use std::{cmp::min, collections::HashSet, fs::read_to_string};
+use std::{cmp::min, fs::read_to_string, hash::BuildHasherDefault};
+
+use rustc_hash::FxHashSet;
 
 fn main() {
     let p1 = game_of_life("./input", 100, false);
@@ -25,7 +27,7 @@ struct Grid<'a> {
     _raw: &'a str,
     y_max: usize,
     x_max: usize,
-    state: HashSet<(usize, usize)>,
+    state: FxHashSet<(usize, usize)>,
     stuck: Vec<(usize, usize)>,
 }
 
@@ -34,7 +36,8 @@ impl<'a> Grid<'a> {
         let y_max = raw.lines().count() - 1;
         let x_max = raw.lines().next().unwrap().len() - 1;
 
-        let mut initial_state = HashSet::with_capacity((y_max * x_max) as usize);
+        let mut initial_state =
+            FxHashSet::with_capacity_and_hasher(y_max * x_max, BuildHasherDefault::default());
 
         for (y, line) in raw.lines().enumerate() {
             for (x, light) in line.chars().enumerate() {
@@ -67,7 +70,10 @@ impl<'a> Grid<'a> {
     }
 
     fn gen_next_state(&mut self) {
-        let mut next_state = HashSet::with_capacity(self.state.capacity());
+        let mut next_state = FxHashSet::with_capacity_and_hasher(
+            self.state.capacity(),
+            BuildHasherDefault::default(),
+        );
 
         for y in 0..=self.y_max {
             for x in 0..=self.x_max {
@@ -78,13 +84,7 @@ impl<'a> Grid<'a> {
                         (x.saturating_sub(1)..=min(self.x_max, x + 1)).map(move |nx| (ny, nx))
                     })
                     .filter(|nyx| nyx != &(y, x))
-                    .fold(0, |acc, n| {
-                        if self.state.contains(&n) {
-                            acc + 1
-                        } else {
-                            acc
-                        }
-                    });
+                    .fold(0, |acc, n| acc + self.state.contains(&n) as usize);
 
                 let should_light = match lit_neighbours_qty {
                     2 | 3 if lit => true,

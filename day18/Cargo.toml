@@ -8,3 +8,7 @@ edition = "2018"
 
 [dependencies]
 itertools = "0.10"
+rustc-hash = "1.1"
+
+[profile.release]
+debug = 1

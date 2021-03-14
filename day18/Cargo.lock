@@ -5,6 +5,7 @@ name = "day18"
 version = "0.1.0"
 dependencies = [
  "itertools",
+ "rustc-hash",
 ]
 
 [[package]]
@@ -21,3 +22,9 @@ checksum = "37d572918e350e82412fe766d24b15e6682fb2ed2bbe018280caa810397cb319"
 dependencies = [
  "either",
 ]
+
+[[package]]
+name = "rustc-hash"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "08d43f7aa6b08d49f382cde6a7982047c3426db949b1424bc4b7ec9ae12c6ce2"
