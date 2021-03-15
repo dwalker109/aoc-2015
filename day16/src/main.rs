@@ -80,7 +80,7 @@ fn part2(path: &str) -> u32 {
     sue.unwrap().0
 }
 
-fn parse_input<'a>(data: &'a str) -> Vec<Sue<'a>> {
+fn parse_input(data: &str) -> Vec<Sue> {
     data.lines()
         .map(|s| {
             let parts = s.splitn(2, ": ").collect::<Vec<_>>();

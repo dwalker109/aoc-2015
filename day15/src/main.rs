@@ -19,8 +19,8 @@ fn bake(path: &str, weight_watching: bool) -> isize {
 }
 
 fn most_tastiest(
-    sum_permutations: &Vec<Vec<usize>>,
-    ingredients: &Vec<Ingredient>,
+    sum_permutations: &[Vec<usize>],
+    ingredients: &[Ingredient],
     five_hundred_cals_target: bool,
 ) -> Vec<isize> {
     sum_permutations
