@@ -1,4 +1,4 @@
-use crate::fight::Item;
+use crate::equipment::Item;
 
 #[derive(Debug, Clone)]
 pub struct Character {
