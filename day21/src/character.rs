@@ -1,3 +1,5 @@
+use std::cmp::max;
+
 use crate::equipment::Item;
 
 #[derive(Debug, Clone)]
@@ -33,9 +35,8 @@ impl Character {
     }
 
     pub fn attack(&self, other: &mut Character) {
-        other.hp = other
-            .hp
-            .saturating_sub(self.dmg().saturating_sub(other.def()));
+        let dmg = max(1, self.dmg().saturating_sub(other.def()));
+        other.hp = other.hp.saturating_sub(dmg);
     }
 
     pub fn is_player(&self) -> bool {
