@@ -6,12 +6,7 @@ use super::{prep_cast, Spell};
 pub struct Drain;
 impl Spell for Drain {
     fn cast(&self, battle: &mut Battle) -> Option<u32> {
-        match prep_cast(
-            &mut battle.player,
-            self.cost(),
-            None,
-            &battle.active_effects,
-        ) {
+        match prep_cast(battle, self.cost(), None) {
             true => {
                 battle.player.hp += 2;
                 battle.boss.guard(2);

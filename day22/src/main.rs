@@ -32,11 +32,11 @@ fn fight(atrophy: bool) -> u32 {
 
     fn round_perm(battle: Battle, result: &mut u32) {
         for spell in spellbook() {
-            let mut battle = battle.clone();
-
             if battle.mana_spent > *result {
                 continue;
             }
+
+            let mut battle = battle.clone();
 
             battle.player_turn(spell);
 

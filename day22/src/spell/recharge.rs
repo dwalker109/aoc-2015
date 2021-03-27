@@ -14,12 +14,7 @@ impl Spell for Recharge {
             mpt: 101,
             state: EffectState::New,
         });
-        match prep_cast(
-            &mut battle.player,
-            self.cost(),
-            Some(effect.id()),
-            &battle.active_effects,
-        ) {
+        match prep_cast(battle, self.cost(), Some(effect.id())) {
             true => {
                 effect.init(&mut battle.player, &mut battle.boss);
                 battle.active_effects.push(effect);

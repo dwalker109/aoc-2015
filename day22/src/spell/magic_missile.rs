@@ -6,12 +6,7 @@ use super::{prep_cast, Spell};
 pub struct MagicMissile;
 impl Spell for MagicMissile {
     fn cast(&self, battle: &mut Battle) -> Option<u32> {
-        match prep_cast(
-            &mut battle.player,
-            self.cost(),
-            None,
-            &battle.active_effects,
-        ) {
+        match prep_cast(battle, self.cost(), None) {
             true => {
                 battle.boss.guard(4);
                 Some(self.cost())

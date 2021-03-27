@@ -21,22 +21,17 @@ pub trait Spell: DynClone {
     fn cost(&self) -> u32;
 }
 
-fn prep_cast(
-    player: &mut Player,
-    cost: u32,
-    effect_id: Option<&str>,
-    active_effects: &[Box<dyn Effect>],
-) -> bool {
+fn prep_cast(battle: &mut Battle, cost: u32, effect_id: Option<&str>) -> bool {
     if let Some(effect_id) = effect_id {
-        if active_effects.iter().any(|e| (e.id() == effect_id)) {
+        if battle.active_effects.iter().any(|e| (e.id() == effect_id)) {
             return false;
         }
     }
 
-    if cost > player.mana {
+    if cost > battle.player.mana {
         false
     } else {
-        player.mana -= cost;
+        battle.player.mana -= cost;
         true
     }
 }
@@ -62,7 +57,6 @@ clone_trait_object!(Effect);
 pub enum EffectState {
     New,
     Running(u32),
-    Done,
     Clear,
 }
 
