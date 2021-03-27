@@ -14,6 +14,7 @@ pub enum Outcome {
 pub struct Battle {
     pub player: Player,
     pub boss: Boss,
+    pub atrophy: bool,
     pub active_effects: Vec<Box<dyn Effect>>,
     pub mana_spent: u32,
     pub outcome: Outcome,
@@ -21,6 +22,14 @@ pub struct Battle {
 
 impl Battle {
     pub fn player_turn(&mut self, spell: Box<dyn Spell>) {
+        if self.atrophy {
+            self.player.hp -= 1;
+            if self.player.hp == 0 {
+                self.outcome = Outcome::BossWin;
+                return;
+            }
+        }
+
         self.run_effects();
         self.clean_up_effects();
 

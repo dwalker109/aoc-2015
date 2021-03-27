@@ -7,16 +7,14 @@ use characters::{Boss, Player};
 use spell::spellbook;
 
 fn main() {
-    let p1 = part1();
+    let p1 = fight(false);
+    let p2 = fight(true);
 
     println!("Part 1: {}", p1);
+    println!("Part 2: {}", p2);
 }
 
-fn part1() -> u32 {
-    fight()
-}
-
-fn fight() -> u32 {
+fn fight(atrophy: bool) -> u32 {
     let mut result = u32::MAX;
 
     let battle = Battle {
@@ -26,6 +24,7 @@ fn fight() -> u32 {
             mana: 500,
         },
         boss: Boss { hp: 51, dmg: 9 },
+        atrophy,
         mana_spent: 0,
         outcome: battle::Outcome::Unknown,
         active_effects: Vec::new(),
@@ -41,9 +40,15 @@ fn fight() -> u32 {
 
             battle.player_turn(spell);
 
-            if let Outcome::PlayerWin(mana) = battle.outcome {
-                *result = min(*result, mana);
-                continue;
+            match battle.outcome {
+                Outcome::Unknown => {}
+                Outcome::PlayerWin(mana) => {
+                    *result = min(*result, mana);
+                    continue;
+                }
+                Outcome::BossWin => {
+                    continue;
+                }
             }
 
             battle.boss_turn();
@@ -76,7 +81,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_part1() {
+    fn test_ex() {
         let mut battle = Battle {
             player: Player {
                 hp: 10,
@@ -84,6 +89,7 @@ mod test {
                 mana: 250,
             },
             boss: Boss { hp: 14, dmg: 8 },
+            atrophy: false,
             active_effects: Vec::new(),
             mana_spent: 0,
             outcome: Outcome::Unknown,
@@ -105,7 +111,14 @@ mod test {
     }
 
     #[test]
-    fn test_part2() {}
+    fn test_part1() {
+        assert_eq!(fight(false), 900);
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(fight(true), 1216);
+    }
 }
 
 pub mod battle;
